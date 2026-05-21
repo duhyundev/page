@@ -35,10 +35,42 @@ pnpm dev           # http://localhost:3000
 ```
 글 추가: `content/`에 frontmatter(title/date/excerpt/published) 포함 .md 작성 후 `pnpm db:seed`.
 
-## 호스팅 (라즈베리파이 + k3s + Cloudflare Tunnel)
-- 배포 절차: `DEPLOY.md`. 이미지는 Pi에서 arm64 네이티브 빌드 → k3s containerd import.
-- 콘텐츠는 빌드 시 이미지에 baked-in. 글 발행 = 새 .md 추가 → 재빌드 → 재배포.
-- `/admin`(에디터)·이미지(R2)·PVC+Litestream 백업은 이후 단계.
+## 호스팅 & 배포 (라즈베리파이 k3s + GitOps) — 라이브
+
+`duhyunkim.page` 라이브. **운영 = `git push` (main)** — 그 외 수동 작업 없음.
+
+```
+코드 수정 → git push
+  └─ GitHub Actions(.github/workflows/deploy.yml): arm64 빌드 → ghcr push → kustomize 이미지 태그 bump 커밋
+       └─ ArgoCD(k3s 상주): 변경 감지 → sync → 롤아웃
+            └─ blog 파드(ghcr 이미지) + cloudflared(SealedSecret 토큰)
+                 └─ Cloudflare Tunnel(`page` 터널) → duhyunkim.page
+```
+
+- 이미지: `ghcr.io/duhyundev/page:<sha>` (public 패키지 → pull secret 불필요). 빌드는 Actions(QEMU arm64).
+- 콘텐츠: 현재 `content/*.md`가 빌드 시 이미지에 baked-in. 글 발행 = .md 추가 → push. (쓰기 DB는 에디터 단계)
+- ⚠️ **클러스터를 `kubectl apply`로 수동 변경하지 말 것.** git이 단일 진실, ArgoCD가 reconcile(self-heal).
+
+### gitops/ 구조 (App-of-Apps)
+- `gitops/bootstrap/root-app.yaml` — 루트 Application (1회 `kubectl apply`로 부트스트랩, `gitops/apps/` 감시)
+- `gitops/apps/` — 자식 Application: `blog`, `cloudflared`
+- `gitops/workloads/blog` — Kustomize(deployment+service). 이미지 태그는 CI가 `kustomize edit set image`로 bump
+- `gitops/workloads/cloudflared` — Kustomize(deployment + **SealedSecret** 토큰)
+- 도구 원칙: 내 워크로드=**Kustomize**, 시크릿=**Sealed Secrets**(암호화해 git 커밋), ArgoCD·sealed-secrets 컨트롤러=**부트스트랩**(아래)
+
+### ArgoCD
+- UI: **`http://duhyunkim-pi.tail601229.ts.net`** (tailnet 전용, `tailscale serve --http=80`로 노출, 공인 노출 0)
+- 로그인: `admin` / 초기비번은 `kubectl -n argocd get secret argocd-initial-admin-secret`
+- argocd-server는 insecure 모드(평문 HTTP; TLS는 tailscale serve가 처리)
+
+### 클러스터 부트스트랩 (재구축 시 1회 — 아직 IaC 아닌 수동)
+1. k3s 설치 + `/boot/firmware/cmdline.txt`에 `cgroup_memory=1 cgroup_enable=memory` 추가 후 재부팅 (없으면 `failed to find memory cgroup`)
+2. ArgoCD 설치(`argo-cd/stable/manifests/install.yaml`) + `argocd-cmd-params-cm`에 `server.insecure=true` 패치
+3. Sealed Secrets 컨트롤러 설치(`controller.yaml`) — ⚠️ 봉인 키 보유. **ArgoCD/Helm으로 재설치 금지**(키 바뀌면 기존 SealedSecret 복호화 불가)
+4. cloudflared 토큰 → `kubeseal` → `gitops/workloads/cloudflared/sealedsecret.yaml` 커밋
+5. `kubectl apply -f gitops/bootstrap/root-app.yaml` → 이후 ArgoCD가 전부 관리
+6. ArgoCD UI 노출: `tailscale serve --bg --http=80 http://<argocd-server-ClusterIP>:80`
+7. Cloudflare 대시보드: `page` 터널 Public Hostname `duhyunkim.page` → `http://blog.blog.svc.cluster.local:80`
 
 ### Pi 접속 (Tailscale)
 집 ISP가 Mac과 Pi에 **서로 다른 공인 /24**를 줘서 로컬 직접 SSH 불가 → Tailscale로 접속.
@@ -47,14 +79,12 @@ pnpm dev           # http://localhost:3000
 - 이 Mac: `duhyunkim-main` `100.81.239.79` / tailnet 계정 `duhyun.dev@`
 - Pi 하드웨어: Pi 5, 16GB RAM, 4코어, aarch64, Debian 13(trixie), NVMe SSD 1TB 부팅
 
-### k3s 주의
-- Raspberry Pi는 `/boot/firmware/cmdline.txt`에 `cgroup_memory=1 cgroup_enable=memory` 추가 + 재부팅해야 k3s가 뜬다(없으면 `failed to find memory cgroup`).
-
 ## 로드맵
 - [x] 스캐폴딩 + DB + 읽기 페이지
-- [x] k3s 배포 아티팩트 (Dockerfile, k8s/)
 - [x] 디자인 시스템 토대 (토큰·Pretendard·테마 토글·홈/About) — `docs/design-system.md`
-- [ ] Pi 호스팅 (진행 중)
+- [x] Pi k3s 호스팅 + Cloudflare Tunnel (`duhyunkim.page` 라이브)
+- [x] GitOps CI/CD (ArgoCD + ghcr + GitHub Actions + Sealed Secrets) — `git push`로 자동 배포
+- [ ] `DEPLOY.md` GitOps 기준으로 갱신 (현재 옛 수동 빌드 방식이라 stale)
 - [ ] claude.ai/design 온보딩 → 화면 디자인 → 통합
-- [ ] Tiptap 하이브리드 에디터 + `/admin`
-- [ ] R2 이미지 업로드 / PVC + Litestream 백업
+- [ ] Tiptap 하이브리드 에디터 + `/admin` → 쓰기 DB → **PVC + Litestream(R2 백업)** 도입
+- [ ] `lib/site.ts` placeholder(태그라인/GitHub·LinkedIn URL) 확정
