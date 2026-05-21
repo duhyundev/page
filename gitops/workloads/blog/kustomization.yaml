@@ -2,10 +2,10 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: blog
 resources:
-  - deployment.yaml
-  - service.yaml
+- deployment.yaml
+- service.yaml
 # CI updates this tag: `kustomize edit set image duhyunkim-page=ghcr.io/duhyundev/page:<sha>`
 images:
-  - name: duhyunkim-page
-    newName: duhyunkim-page
-    newTag: latest
+- name: duhyunkim-page
+  newName: ghcr.io/duhyundev/page
+  newTag: sha-0bcca70
