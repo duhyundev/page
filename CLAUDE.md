@@ -7,6 +7,7 @@
 - **응답·문서·스킬·주석은 한글로 작성.** 명령·식별자·코드·기술 용어(kubectl, ArgoCD 등)는 영문 유지.
 - **패키지 매니저는 pnpm** (npm/yarn 아님). `pnpm dlx` 사용, `pnpm-lock.yaml` 유지.
 - 커밋은 `/commit` 스킬 포맷 (서명됨, `Co-Authored-By` 트레일러).
+- **스킬·설정은 프로젝트 단위**(`.claude/skills/`)로 관리. 전역(`~/.claude/`) 스킬 안 씀.
 - 메모리 시스템 쓰지 말 것. 영속 정보는 이 CLAUDE.md 또는 `docs/`에 기록.
 
 ## 스택
