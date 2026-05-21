@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1779366491950,
+      "tag": "0000_bouncy_albert_cleary",
+      "breakpoints": true
+    }
+  ]
+}

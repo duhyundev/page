@@ -1,0 +1,40 @@
+# Cloudflare Tunnel connector. Token comes from the cloudflared-token Secret,
+# which the sealed-secrets controller materializes from sealedsecret.yaml.
+# Public hostname (duhyunkim.page -> blog.blog.svc.cluster.local:80) is
+# configured in the Cloudflare dashboard for the `page` tunnel.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudflared
+  template:
+    metadata:
+      labels:
+        app: cloudflared
+    spec:
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:latest
+          args:
+            - tunnel
+            - --no-autoupdate
+            - run
+            - --token
+            - $(TUNNEL_TOKEN)
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflared-token
+                  key: token
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi

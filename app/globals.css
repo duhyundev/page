@@ -1,0 +1,74 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Class-based dark mode (toggle + system default set via inline script in layout). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Design tokens — shadcn-compatible naming. Source of truth: docs/design-system.md */
+:root {
+  --background: #fafaf8; /* warm near-white */
+  --surface: #ffffff;
+  --foreground: #1a1a19; /* warm near-black */
+  --muted: #6b6b66;
+  --border: #e6e5e1;
+  --accent: #c81e2c; /* link/emphasis text — slightly deepened for legibility */
+  --accent-hover: #a5141f;
+  --accent-signature: #da291c; /* Nord red — logo dot / small non-text marks */
+}
+
+.dark {
+  --background: #0e0e0d;
+  --surface: #161615;
+  --foreground: #ecebe7;
+  --muted: #9a9893;
+  --border: #2a2a27;
+  --accent: #ff6a60; /* lightened warm red for dark contrast */
+  --accent-hover: #ff8780;
+  --accent-signature: #ff4438;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-signature: var(--accent-signature);
+
+  --font-sans: "Pretendard Variable", Pretendard, ui-sans-serif, system-ui,
+    -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "D2Coding", monospace;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Reading-first prose: token-driven so dark mode swaps automatically. */
+.prose {
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-lead: var(--muted);
+  --tw-prose-links: var(--accent);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-counters: var(--muted);
+  --tw-prose-bullets: var(--border);
+  --tw-prose-hr: var(--border);
+  --tw-prose-quotes: var(--muted);
+  --tw-prose-quote-borders: var(--border);
+  --tw-prose-captions: var(--muted);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-pre-code: var(--foreground);
+  --tw-prose-pre-bg: var(--surface);
+  --tw-prose-th-borders: var(--border);
+  --tw-prose-td-borders: var(--border);
+
+  font-size: 1.0625rem; /* 17px */
+  line-height: 1.75;
+}

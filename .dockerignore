@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+build
+data
+*.db
+*.db-shm
+*.db-wal
+.git
+.gitignore
+.env
+.env*.local
+.DS_Store
+k8s
+DEPLOY.md
+README.md

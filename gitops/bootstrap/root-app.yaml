@@ -1,0 +1,21 @@
+# App-of-Apps root. Bootstrapped once with:
+#   kubectl apply -f gitops/bootstrap/root-app.yaml
+# It watches gitops/apps/ and manages every child Application from there.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/duhyundev/page.git
+    targetRevision: main
+    path: gitops/apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
