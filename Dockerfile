@@ -18,7 +18,9 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN pnpm build && pnpm db:seed
+# Cache mount for Next's build cache so incremental rebuilds across CI runs are
+# fast (the COPY above always busts the layer cache, but .next/cache persists).
+RUN --mount=type=cache,target=/app/.next/cache pnpm build && pnpm db:seed
 
 # --- runner: minimal runtime image ---
 FROM base AS runner
