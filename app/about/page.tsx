@@ -10,7 +10,9 @@ export default function AboutPage() {
   return (
     <div className="flex flex-col gap-12">
       <header className="flex flex-col gap-3">
-        <h1 className="text-3xl font-bold tracking-tight">About</h1>
+        <h1 className="text-[2.5rem] font-bold leading-tight tracking-tight sm:text-5xl">
+          About
+        </h1>
         <p className="text-lg text-muted">{site.tagline}</p>
       </header>
 
@@ -37,7 +39,7 @@ export default function AboutPage() {
             <a
               key={s.label}
               href={s.href}
-              className="text-accent transition-colors hover:text-accent-hover"
+              className="text-muted transition-colors hover:text-foreground"
               {...(s.label !== "Email"
                 ? { target: "_blank", rel: "noreferrer noopener" }
                 : {})}

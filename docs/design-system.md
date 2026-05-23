@@ -86,7 +86,7 @@
 ### 스케일 (rem 기준, 16px = 1rem)
 | 용도 | 크기 | 무게 | 비고 |
 |---|---|---|---|
-| Hero (홈/About 상단) | 2.5–3rem | 700 | tracking 살짝 타이트 |
+| Hero (홈/About 상단) | 2.5–3rem | 700 | tracking·leading 타이트 (`text-[2.5rem] sm:text-5xl`) |
 | h1 (글 제목) | 2rem | 700 | |
 | h2 | 1.5rem | 600 | |
 | h3 | 1.25rem | 600 | |
@@ -120,6 +120,12 @@ border-width: 1px            /* 얇게 */
 - **About**: 롱폼 소개. 섹션 구분(예: 지금 하는 일 / 이력). 만든 것은 관련 **글로 링크**. 끝에 연락 링크.
 - **Contact**: 별도 페이지 없음. **푸터 + About 하단**에 이메일·GitHub·LinkedIn.
 
+### 링크 규칙 (2 + 1)
+하나의 "링크"가 여러 hover로 갈라지면 시스템 추출이 흐려진다 → 용도별로 고정한다.
+- **규칙 A — 본문·강조 링크**: `text-accent` 기본 → `hover:text-accent-hover`. prose 본문 링크, 홈 "더 알아보기" 같은 인라인 CTA. (prose는 `globals.css`의 `.prose a`로 일괄 처리)
+- **규칙 B — 네비·유틸리티·연락 링크**: 기본 `text-muted`(또는 상속) → `hover:text-foreground`. 헤더 네비, 글상세 "← 목록", **푸터·About의 소셜(이메일·GitHub·LinkedIn)**. spec 6번 "푸터=작은 muted 텍스트" 톤 유지 + 레드 남발 방지.
+- **제목 링크 (별도)**: 글 목록 제목처럼 텍스트 자체가 링크인 경우 — 기본 `text-foreground` → `hover:text-accent`(호버 강조).
+
 ### 테마 토글
 - 라이트/다크 **둘 다 + 토글 버튼**. 시스템 설정 기본값 + 사용자 선택 `localStorage` 저장.
 - 클라이언트 JS 필요 → (a) 코드 단계에서 구현. SSR 깜빡임(FOUC) 방지 처리.
@@ -128,15 +134,16 @@ border-width: 1px            /* 얇게 */
 
 ## 7. (a) 코드 단계 체크리스트
 
-- [ ] `pretendard` 설치 + `--font-sans` 토큰 교체
-- [ ] `app/globals.css` 컬러 토큰을 위 값으로 교체 (light/dark)
-- [ ] 테마 토글 컴포넌트 (system + localStorage, FOUC 방지)
-- [ ] 레이아웃: 헤더(네비+토글) / 푸터(연락 링크)
-- [ ] 홈 하이브리드 (인트로 + 최근 글)
-- [ ] About 페이지 (끝에 연락 링크)
-- [ ] Contact = 푸터 + About 하단 (별도 페이지 없음)
-- [ ] prose 스타일을 토큰에 맞춰 튜닝
-- [ ] 포인트 컬러: ink blue vs underline-only 라이브 비교 후 확정
+- [x] `pretendard` 설치 + `--font-sans` 토큰 교체
+- [x] `app/globals.css` 컬러 토큰을 위 값으로 교체 (light/dark)
+- [x] 테마 토글 컴포넌트 (system + localStorage, FOUC 방지)
+- [x] 레이아웃: 헤더(네비+토글) / 푸터(연락 링크)
+- [x] 홈 하이브리드 (인트로 + 최근 글)
+- [x] About 페이지 (끝에 연락 링크) — ⚠️ 본문은 placeholder
+- [x] Contact = 푸터 + About 하단 (별도 페이지 없음)
+- [x] prose 스타일을 토큰에 맞춰 튜닝 + 링크 규칙(A/B) 일괄 적용
+- [x] 타이포 스케일을 spec에 맞춤 (Hero 2.5–3rem, 글 제목 2rem)
+- [ ] 포인트 컬러: ink blue vs underline-only 라이브 비교 후 확정 (현재 accent 텍스트로 잠정)
 
 ## 8. Claude Design 온보딩 메모
 - 위 토큰·타이포가 코드에 박힌 상태로 온보딩 → 시스템이 깔끔하게 추출됨.

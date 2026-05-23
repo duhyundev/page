@@ -55,7 +55,7 @@ export default function RootLayout({
                 <a
                   key={s.label}
                   href={s.href}
-                  className="transition-colors hover:text-accent"
+                  className="transition-colors hover:text-foreground"
                   {...(s.label !== "Email"
                     ? { target: "_blank", rel: "noreferrer noopener" }
                     : {})}

@@ -72,3 +72,12 @@ body {
   font-size: 1.0625rem; /* 17px */
   line-height: 1.75;
 }
+
+/* Link rule A (body/emphasis): accent → accent-hover. Matches inline rule-A links. */
+.prose a {
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.prose a:hover {
+  color: var(--accent-hover);
+}

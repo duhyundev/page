@@ -19,7 +19,9 @@ export default function Home() {
     <div className="flex flex-col gap-16">
       {/* Intro */}
       <section className="flex flex-col gap-4">
-        <h1 className="text-4xl font-bold tracking-tight">{site.name}</h1>
+        <h1 className="text-[2.5rem] font-bold leading-tight tracking-tight sm:text-5xl">
+          {site.name}
+        </h1>
         <p className="text-lg text-muted">{site.tagline}</p>
         <p className="leading-relaxed">
           기술 딥다이브와 만드는 과정, 그 사이의 생각을 글로 남깁니다.{" "}

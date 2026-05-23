@@ -43,7 +43,9 @@ export default async function PostPage({
       </Link>
       <header className="mt-6 mb-8 flex flex-col gap-2">
         <time className="text-sm text-muted">{formatDate(post.date)}</time>
-        <h1 className="text-3xl font-bold tracking-tight">{post.title}</h1>
+        <h1 className="text-[2rem] font-bold leading-tight tracking-tight">
+          {post.title}
+        </h1>
       </header>
       <div className="prose max-w-none">
         <Markdown remarkPlugins={[remarkGfm]}>{post.content}</Markdown>
