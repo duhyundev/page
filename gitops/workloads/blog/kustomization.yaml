@@ -8,4 +8,4 @@ resources:
 images:
 - name: duhyunkim-page
   newName: ghcr.io/duhyundev/page
-  newTag: sha-0bcca70
+  newTag: sha-c60f1e7
