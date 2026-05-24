@@ -5,9 +5,9 @@ resources:
 - deployment.yaml
 - service.yaml
 - pvc.yaml
-- sealedsecret.yaml # blog-admin: ADMIN_PASSWORD_HASH + AUTH_SECRET
+- sealedsecret.yaml
 # CI updates this tag: `kustomize edit set image duhyunkim-page=ghcr.io/duhyundev/page:<sha>`
 images:
 - name: duhyunkim-page
   newName: ghcr.io/duhyundev/page
-  newTag: sha-c60f1e7
+  newTag: sha-b86dfb2
