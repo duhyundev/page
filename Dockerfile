@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
 
-# Builds a self-contained Next.js standalone server with the content already
-# seeded into SQLite. Designed to be built natively on the Raspberry Pi (arm64).
+# Builds a self-contained Next.js standalone server. The DB is NOT baked in —
+# at runtime the app opens DATABASE_URL (a PVC-mounted file in production) and
+# applies migrations on first connection. Built natively on the Pi (arm64).
 FROM node:22-slim AS base
 RUN corepack enable
 WORKDIR /app
@@ -14,13 +15,13 @@ RUN apt-get update \
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-# --- builder: compile the app and bake content into data/blog.db ---
+# --- builder: compile the app ---
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # Cache mount for Next's build cache so incremental rebuilds across CI runs are
 # fast (the COPY above always busts the layer cache, but .next/cache persists).
-RUN --mount=type=cache,target=/app/.next/cache pnpm build && pnpm db:seed
+RUN --mount=type=cache,target=/app/.next/cache pnpm build
 
 # --- runner: minimal runtime image ---
 FROM base AS runner
@@ -30,6 +31,9 @@ ENV NODE_ENV=production \
 WORKDIR /app
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/data ./data
+# Migration SQL must be present at runtime — auto-migrate reads ./db/migrations.
+COPY --from=builder /app/db/migrations ./db/migrations
 EXPOSE 3000
+# DATABASE_URL should point at a persistent volume in production (see gitops).
+ENV DATABASE_URL=/data/blog.db
 CMD ["node", "server.js"]
