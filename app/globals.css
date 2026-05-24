@@ -14,6 +14,16 @@
   --accent: #c81e2c; /* link/emphasis text — slightly deepened for legibility */
   --accent-hover: #a5141f;
   --accent-signature: #da291c; /* Nord red — logo dot / small non-text marks */
+
+  /* Admin chrome tokens — sidebar/topbar a tick darker than content bg. */
+  --admin-chrome: #f4f2ee;
+  --admin-chrome-strong: #eceae5;
+  --admin-divider: #e6e5e1;
+  --status-draft: #c9851e; /* warm amber */
+  --status-published: #1f8a5b; /* deep green */
+  --status-scheduled: #2a6fdb; /* calm blue */
+  --status-unsaved: var(--accent); /* nord red */
+  --admin-sidebar-w: 240px;
 }
 
 .dark {
@@ -25,6 +35,14 @@
   --accent: #ff6a60; /* lightened warm red for dark contrast */
   --accent-hover: #ff8780;
   --accent-signature: #ff4438;
+
+  /* Admin chrome — dark */
+  --admin-chrome: #131312;
+  --admin-chrome-strong: #1c1c1a;
+  --admin-divider: #2a2a27;
+  --status-draft: #e0a93c;
+  --status-published: #4eb67f;
+  --status-scheduled: #7ba9f0;
 }
 
 @theme inline {
